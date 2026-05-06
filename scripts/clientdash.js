@@ -91,7 +91,7 @@ async function loadPatientDashboard() {
             historyContainer.innerHTML = '';
 
             if (result.data.length === 0) {
-                showEmptyStates();
+                checkEmptyTabs();
                 return;
             }
 
