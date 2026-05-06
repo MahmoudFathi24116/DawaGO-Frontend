@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DawaGO | إنشاء حساب جديد</title>
+    <link rel="shortcut icon" href="../assets/fav3.png" type="image/png">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body class="light-mode">
+
+    <header>
+        <a href="../index.html" class="logo">Dawa<span>GO</span></a>
+        <button class="hamburger-btn" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+        <div id="nav-menu" class="nav-controls">
+            <button id="theme-toggle" class="icon-btn"><i class="fa-regular fa-lightbulb"></i></button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="form-wrapper">
+            <div class="form-card">
+                <div class="form-header">
+                    <i class="fas fa-user-plus"></i>
+                    <h2>إنشاء حساب جديد</h2>
+                    <p>انضم إلينا لسهولة العثور على الأدوية</p>
+                </div>
+
+                <div class="user-type-selector">
+                    <div class="type-option active" data-role="customer">
+                        <i class="fas fa-user-injured"></i>
+                        <span>عميل</span>
+                    </div>
+                    <div class="type-option" data-role="pharmacy">
+                        <i class="fas fa-first-aid"></i>
+                        <span>صيدلي</span>
+                    </div>
+                </div>
+
+                <form id="registerForm">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input id="user-name-in" type="text" placeholder="الاسم بالكامل" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input id="email-in" type="email" placeholder="البريد الإلكتروني" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input id="phone-in" type="tel" placeholder="رقم الهاتف (يفضل واتساب)" required>
+                    </div>
+
+                    <div id="pharmacy-fields" class="pharmacy-fields-container" style="display: none;">
+                        <span class="address-section-title"><i class="fas fa-store"></i> بيانات الصيدلية والعنوان</span>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-clinic-medical"></i>
+                            <input type="text" id="pharmacyName" placeholder="اسم الصيدلية">
+                        </div>
+
+                        <div class="address-grid">
+                            <div class="input-group select-wrapper">
+                                <i class="fas fa-city"></i>
+                                <select id="governorate">
+                                    <option value="" disabled selected>اختر المحافظة</option>
+                                    <option value="القاهرة">القاهرة</option>
+                                    <option value="الجيزة">الجيزة</option>
+                                    <option value="الإسكندرية">الإسكندرية</option>
+                                    <option value="الدقهلية">الدقهلية</option>
+                                    <option value="البحر الأحمر">البحر الأحمر</option>
+                                    <option value="البحيرة">البحيرة</option>
+                                    <option value="الفيوم">الفيوم</option>
+                                    <option value="الغربية">الغربية</option>
+                                    <option value="الإسماعيلية">الإسماعيلية</option>
+                                    <option value="المنوفية">المنوفية</option>
+                                    <option value="المنيا">المنيا</option>
+                                    <option value="القليوبية">القليوبية</option>
+                                    <option value="الوادي الجديد">الوادي الجديد</option>
+                                    <option value="السويس">السويس</option>
+                                    <option value="الشرقية">الشرقية</option>
+                                    <option value="أسوان">أسوان</option>
+                                    <option value="أسيوط">أسيوط</option>
+                                    <option value="بني سويف">بني سويف</option>
+                                    <option value="بورسعيد">بورسعيد</option>
+                                    <option value="دمياط">دمياط</option>
+                                    <option value="جنوب سيناء">جنوب سيناء</option>
+                                    <option value="كفر الشيخ">كفر الشيخ</option>
+                                    <option value="مطروح">مطروح</option>
+                                    <option value="الأقصر">الأقصر</option>
+                                    <option value="قنا">قنا</option>
+                                    <option value="شمال سيناء">شمال سيناء</option>
+                                    <option value="سوهاج">سوهاج</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <input type="text" id="city-center" placeholder="المركز / المدينة">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fas fa-home"></i>
+                            <input type="text" id="district-village" placeholder="الحي / القرية / اسم الشارع">
+                        </div>
+                        <div class="input-group">
+                            <i class="fa-brands fa-google"></i>
+                            <input type="text" id="gmap-url" placeholder="رابط جوجل ماب ( اختياري )">
+                        </div>
+                    </div>
+
+                    <div class="location-box" style="margin-top: 20px; text-align: right;">
+                        <label style="font-weight: bold; font-size: 0.9rem;">تحديد الموقع على الخريطة (GPS):</label>
+                        <button type="button" id="getLocationBtn" class="btn-small outline" style="width: 100%; margin: 10px 0; cursor: pointer;">
+                            <i class="fas fa-crosshairs"></i> اضغط لتحديد موقعك الحالي
+                        </button>
+                        <div id="map"></div>
+                        <input type="hidden" id="latitude-in" name="latitude">
+                        <input type="hidden" id="longitude-in" name="longitude">
+                    </div>
+
+                    <div class="input-group" style="margin-top: 15px;">
+                        <i class="fas fa-lock"></i>
+                        <input id="user-pass-in" type="password" placeholder="كلمة المرور" required>
+                    </div>
+
+                    <button id="signup-btn" type="submit" class="btn-small btn-full" style="width: 100%; padding: 12px; margin-top: 10px;">إنشاء الحساب</button>
+                </form>
+
+                <div class="form-footer">
+                    <p>لديك حساب بالفعل؟ <a href="../pages/signin.html">سجل دخولك</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../scripts/signup.js"></script>
+</body>
+</html>

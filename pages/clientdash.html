@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DawaGO | لوحة التحكم</title>
+    <link rel="shortcut icon" href="../assets/fav3.png" type="image/png">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* كود أساسي لضمان عمل التبويبات */
+        .tab-content { display: none; }
+        .tab-content.active { display: block !important; }
+        
+        /* تحسينات بصرية للحالات */
+        .status-pending { border-right: 4px solid #f1c40f; }
+        .status-confirmed { border-right: 4px solid #27ae60; }
+        .status-waiting { border-right: 4px solid #3498db; }
+        .status-completed { border-right: 4px solid #7f8c8d; opacity: 0.8; }
+        
+        .empty-state { text-align: center; padding: 40px; color: #888; }
+        .empty-state i { font-size: 3rem; margin-bottom: 10px; color: #ccc; }
+        /* تأكد أن التبويب النشط يعرض ما بداخله */
+        #orders.active, #active-res.active, #wait-list.active, #history.active {
+            display: block !important;
+        }
+
+        /* إلغاء أي display: none قديم على الكروت */
+        .tab-content .dash-card {
+            display: block !important; 
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <header>
+        <a href="../index.html" class="logo">Dawa<span>GO</span></a>
+        <button class="hamburger-btn" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+        <div id="nav-menu" class="nav-controls">
+            <button id="theme-toggle" class="icon-btn"><i class="fa-regular fa-lightbulb"></i></button>
+            <a href="../pages/profile.html" class="icon-btn"><i class="fas fa-user-circle"></i></a>
+            <a href="../pages/client.html" class="btn-small outline">ابحث عن دواء</a>
+        </div>
+    </header>
+ 
+    <main class="container dash-container">
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="openTab(event, 'active-res')"><i class="fas fa-check-circle"></i> حجوزاتي</button>
+            <button class="tab-btn" onclick="openTab(event, 'wait-list')"><i class="fas fa-clock"></i> الانتظار</button>
+            <button class="tab-btn" onclick="openTab(event, 'orders')"><i class="fas fa-box-open"></i> الطلبات</button>
+            <button class="tab-btn" onclick="openTab(event, 'history')">
+            <i class="fas fa-history"></i> السجل
+            </button>
+        </div>
+        
+        <div id="active-res" class="tab-content active"></div>
+        <div id="wait-list" class="tab-content"></div>
+        <div id="orders" class="tab-content"></div>
+        <div id="history" class="tab-content"></div>
+    </main>
+
+    <script src="../scripts/clientdash.js"></script>
+</body>
+</html>

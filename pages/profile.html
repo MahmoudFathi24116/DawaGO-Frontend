@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DawaGO | الملف الشخصي</title>
+    <link rel="shortcut icon" href="../assets/fav3.png" type="image/png">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body class="light-mode">
+    <header>
+        <a href="../index.html" class="logo">Dawa<span>GO</span></a>
+        
+        <button class="hamburger-btn" id="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div id="nav-menu" class="nav-controls">
+            <button id="theme-toggle" class="icon-btn"><i class="fa-regular fa-lightbulb"></i></button>
+            <a href="../index.html" class="icon-btn" title="الرئيسية"><i class="fas fa-home"></i></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="profile-wrapper">
+            <div class="form-card profile-card">
+                
+                <div class="form-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h2 id="display-name">اسم المستخدم</h2>
+                    <span id="user-role-badge" class="badge-role">نوع الحساب</span>
+                </div>
+
+                <form id="profileForm">
+                    <div class="input-group">
+                        <label class="input-label">البريد الإلكتروني (ثابت)</label>
+                        <i class="fas fa-envelope"></i> 
+                        <input type="email" id="display-email" readonly class="readonly-input">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">الاسم الكامل</label>
+                        <i class="fas fa-user-edit"></i>
+                        <input type="text" id="edit-name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">رقم الهاتف</label>
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="edit-phone">
+                    </div>
+                    
+                    <div id="pharmacy-only-fields" style="display: none;">
+                        <div class="input-group">
+                            <label class="input-label">اسم الصيدلية</label>
+                            <i class="fas fa-clinic-medical"></i>
+                            <input type="text" id="edit-pharmacy-name">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">المحافظة</label>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" id="edit-gov">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">المركز / المدينة</label>
+                            <i class="fas fa-city"></i>
+                            <input type="text" id="edit-city">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">الحي / القرية</label>
+                            <i class="fas fa-map-signs"></i>
+                            <input type="text" id="edit-district" placeholder="مثال: ميت غمر / حي الزهور">
+                        </div>
+                        
+                        
+                        <div class="input-group">
+                            <label class="input-label">رابط Google Maps</label>
+                            <i class="fas fa-location-arrow"></i>
+                            <input type="url" id="edit-location">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">وصف العنوان</label>
+                            <i class="fas fa-info-circle" style="top: 35px;"></i> <textarea id="edit-address-desc" placeholder="مثال: بجوار مسجد التقوى..." class="profile-textarea"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="location-box" style="margin-top: 20px; text-align: right;">
+                        <label style="font-weight: bold; font-size: 0.9rem;">تحديد الموقع على الخريطة (GPS):</label>
+                        <button type="button" id="getLocationBtn" class="btn-small outline" style="width: 100%; margin: 10px 0; cursor: pointer;">
+                            <i class="fas fa-crosshairs"></i> اضغط لتحديد موقعك الحالي
+                        </button>
+                        <div id="map"></div>
+                        <input type="hidden" id="latitude-in" name="latitude">
+                        <input type="hidden" id="longitude-in" name="longitude">
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <button type="submit" class="btn-small btn-full">حفظ التعديلات</button>
+                        <button type="button" id="logout-btn" class="btn-small outline btn-logout btn-full">تسجيل الخروج</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../scripts/profile.js"></script>
+</body>
+</html>

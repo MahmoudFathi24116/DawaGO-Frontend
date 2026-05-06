@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DawaGO | لوحة تحكم الصيدلي</title>
+    <link rel="shortcut icon" href="../assets/fav3.png" type="image/png">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript"></script>
+    <style>
+        @media print {
+    /* 1. إخفاء كل العناصر في الصفحة */
+    body * {
+        visibility: hidden;
+    }
+
+    /* 2. إظهار حاوية سجل المبيعات والجدول وما بداخله فقط */
+    #sales-history, 
+    #sales-history * {
+        visibility: visible;
+    }
+
+    /* 3. تحديد مكان الحاوية في أعلى الصفحة تماماً عند الطباعة */
+    #sales-history {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 4. إخفاء الأزرار داخل الحاوية (مثل زر الطباعة نفسه) */
+    .btn-icon, .btn-refresh, .tabs-header, .sidebar, .nav-header {
+        display: none !important;
+    }
+
+    /* 5. تحسين شكل الجدول للطباعة */
+    .dash-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .dash-table th, .dash-table td {
+        border: 1px solid #000 !important; /* حدود سوداء واضحة */
+        padding: 10px;
+        color: #000;
+    }
+}
+    </style>
+</head>
+<body class="light-mode">
+
+    <header>
+        <a href="../index.html" class="logo">Dawa<span>GO</span></a>
+        <button class="hamburger-btn" id="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div id="nav-menu" class="nav-controls">
+            <button id="theme-toggle" class="icon-btn" title="تبديل الوضع"><i class="fa-regular fa-lightbulb"></i></button>
+            <a href="../pages/profile.html" class="icon-btn" title="الملف الشخصي"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </header>
+
+    <main class="container dash-container">
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="openTab(event, 'inventory')"><i class="fas fa-boxes"></i> إدارة المخزون</button>
+            <button class="tab-btn" onclick="openTab(event, 'orders')"><i class="fas fa-clipboard-list"></i> الحجوزات</button>
+        </div>
+        
+        <div id="inventory" class="tab-content active">
+            <div class="dash-card">
+                <h3><i class="fas fa-plus-circle"></i> إضافة صنف جديد للموقع /البحث عن صنف</h3>
+                <form id="addMedicineForm" class="dash-form">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label class="input-label">اسم الدواء</label>                           
+                            <input type="text" id="med-name" list="medications-list" placeholder="ابحث عن دواء أو أضف جديداً">
+                            <datalist id="medications-list"></datalist>
+                        </div>
+                        <div class="input-group-row" style="display: flex; gap: 10px;">
+                                <div class="input-group" style="flex: 1;">
+                                    <label class="input-label">عدد العبوات</label>
+                                    <input type="number" id="med-pkgs" placeholder="0" min="0">
+                                </div>
+                                <div class="input-group" style="flex: 1;">
+                                    <label class="input-label">وحدات إضافية (شريط/امبول)</label>
+                                    <input type="number" id="med-extra-units" placeholder="0" min="0">
+                                </div>
+                            </div>
+
+                            <div id="units-per-pkg-field" class="input-group" style="display: block;">
+                                <label class="input-label">عدد الوحدات في العبوة الواحدة</label>
+                                <input type="number" id="units-per-pkg" placeholder="مثال: 3 أشرطة" min="1">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">سعر الصنف بالجنيه المصري ( لصيدليتك فقط )</label>
+                            <input type="number" id="med-price" step="0.01" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">تاريخ انتهاء الصلاحية</label>
+                            <input type="text" id="expiry_date" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                        <div id="med-desq" class="input-group">
+                            <label for="med_desc" class="input-label">وصف الدواء:</label>
+                            <input type="text" id="med_desc" name="description" placeholder="اكتب دواعي الاستعمال بشكل ملخص">
+                        </div>
+                        <div id="med-img" class="input-group">
+                            <label class="input-label">صورة الدواء</label>
+                            <div class="file-upload-wrapper">
+                                <button type="button" id="upload_widget" class="file-custom-btn">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span id="file-name">رفع صورة الدواء إلى Cloudinary</span>
+                                </button>
+                                <img id="img-preview" src="" style="display:none; width: 100px; margin-top: 10px; border-radius: 8px;">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-small btn-full">تحديث المخزون لدى الصيدلية</button>
+                </form>
+            </div>
+            
+            <div class="dash-card">
+                <h3><i class="fas fa-list"></i> قائمة الأدوية المتوفرة عندك</h3>
+                <div class="search-box-container" style="margin-bottom: 15px;">
+                    <div class="input-group">
+                        <label class="input-label"><i class="fas fa-search"></i> ابحث في مخزونك لتعديله:</label>
+                        <input type="text" id="inventory-search" list="inventory-data" placeholder="اكتب اسم الدواء هنا..." class="search-input">
+                        <datalist id="inventory-data"></datalist>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="stock-table" class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>الدواء</th>
+                                <th>الكمية</th>
+                                <th>السعر</th>
+                                <th>الصلاحية</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="orders" class="tab-content" style="display:none;">
+            <div class="tabs-header">
+                <button class="tab-btn2 btn-red active2" onclick="openTab2(event, 'orders-new')"><i class="fas fa-bell"></i> طلبات جديدة</button>
+                <button class="tab-btn2" onclick="openTab2(event, 'orders-accepted')"><i class="fas fa-check-circle"></i> طلبات مقبولة</button>
+                <button class="tab-btn2 btn-yellow" onclick="openTab2(event, 'orders-pending')"><i class="fas fa-clock"></i> طلبات معلقة</button>
+            </div>
+            
+            <div id="orders-new" class="dash-card status-new">
+                <div class="card-header-flex">
+                    <h3><i class="fas fa-bell"></i> طلبات جديدة</h3>
+                    <span class="badge-count">0 طلبات</span>
+                </div>
+                <p class="table-hint">يجب الرد قبل انتهاء المهلة لتجنب الرفض التلقائي</p>
+                <div class="table-responsive">
+                    <table class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>المريض</th>
+                                <th>الدواء</th>
+                                <th>كمية الحجز</th>
+                                <th>المهلة للرد</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="orders-accepted" class="dash-card status-accepted" style="display:none;">
+                <div class="card-header-flex">
+                    <h3><i class="fas fa-check-circle"></i> طلبات مقبولة (بانتظار الاستلام)</h3>
+                    <div class="search-box-mini">
+                    <input type="text" id="search-accepted-code" placeholder="بحث بكود الحجز (مثلاً: #1234)..." oninput="filterAcceptedOrders()">
+                    </div>
+                    <span class="badge-count">0 حجوزات</span>
+                </div>
+                <p class="table-hint">المريض الأول في الدور - إذا انتهت المهلة يتحول الدواء للمنتظر التالي</p>
+                <div class="table-responsive">
+                    <table id="reserved-table" class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>المريض</th>
+                                <th>الدواء</th>
+                                <th>كمية الحجز</th>
+                                <th>كود الحجز</th>
+                                <th>مهلة الاستلام</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="orders-pending" class="dash-card status-onhold" style="display:none;">
+                <div class="card-header-flex">
+                    <h3><i class="fas fa-clock"></i> طلبات معلقة (قائمة الانتظار)</h3>
+                    <div class="search-box-mini">
+                    <input type="text" id="search-waiting-med" placeholder="بحث باسم الدواء..." oninput="filterWaitingOrders()">
+                    </div>
+                    <span class="badge-count">0 قوائم انتظار</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>المريض</th>
+                                <th>الدواء</th>
+                                <th>كمية الحجز</th>
+                                <th>الترتيب</th>
+                                <th>ملاحظة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="archive-trigger">
+                <p>هل تريد مراجعة العمليات السابقة؟</p>
+                <button class="btn-small outline" onclick="openTab(event, 'sales-history'),enableSalesTab()">
+                    <i class="fas fa-history"></i> عرض سجل المبيعات والطلبات المسلمة
+                </button>
+            </div>
+        </div>
+
+        <div id="sales-history" class="tab-content" style="display:none;">
+            <div class="dash-card status-archived">
+                <div class="card-header-flex">
+                    <h3><i class="fas fa-file-invoice-dollar"></i> سجل المبيعات (الطلبات المسلمة)</h3>
+                    <button class="btn-icon" onclick="window.print()" title="طباعة التقرير">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>المريض</th>
+                                <th>الدواء</th>
+                                <th>تاريخ الاستلام</th>
+                                <th>رقم العملية</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            لا توجد بيانات متاحة 
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeEditModal()">&times;</span>
+        <h3>تعديل <span id="modal-med-name"></span></h3>
+        <form id="editInventoryForm">
+            <input type="hidden" id="edit-inventory-id">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label class="input-label">عدد العبوات</label>
+                    <input type="number" id="edit-pkgs" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">وحدات إضافية</label>
+                    <input type="number" id="edit-units" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">السعر (جنيه)</label>
+                    <input type="number" id="edit-price" step="0.01" required>
+                </div>
+            </div>
+            <p style="font-size: 0.8em; color: #ff4d4d; margin-top: 10px;">
+                * ملحوظة: إذا تم ضبط الكمية لصفر، سيتم حذف الصنف من مخزونك نهائياً.
+            </p>
+            <button type="submit" class="btn-small btn-full">حفظ التعديلات</button>
+        </form>
+    </div>
+</div>
+<style>
+/* تنسيق الـ Modal */
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
+.modal-content { background: var(--bg-light); margin: 10% auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px; position: relative; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.close-modal { position: absolute; left: 20px; top: 15px; font-size: 28px; cursor: pointer; color: var(--text-color); opacity: 0.7; }
+.close-modal:hover { opacity: 1; }
+</style>
+
+
+    <script src="../scripts/pharmacy.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DawaGO | نتائج البحث</title>
+    <link rel="shortcut icon" href="../assets/fav3.png" type="image/png">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="light-mode">
+    <header>
+        <a href="../index.html" class="logo">Dawa<span>GO</span></a>
+        
+        <button class="hamburger-btn" id="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div id="nav-menu" class="nav-controls">
+            <button id="theme-toggle" class="icon-btn" title="تبديل الوضع"><i class="fa-regular fa-lightbulb"></i></button>
+            <a href="../pages/clientdash.html" class="icon-btn" title="لوحة التحكم"><i class="fas fa-th-large"></i></a>
+        </div>
+    </header>
+    <main class="container">
+        <section class="search-header-box">
+            <div class="search-bar-main">
+                <input type="text" id="searchInput" list="medications-list" placeholder="ابحث عن دواء آخر...">
+                <datalist id="medications-list"></datalist>
+                <button class="btn-small"><i class="fas fa-search"></i></button>
+            </div>
+            <p class="results-stats"> <strong id="query-name"> </strong></p>
+        </section>
+        <div id="results-grid" class="results-grid">
+        </div>
+    </main>
+
+    <div id="bookingModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            <h3 style="color: var(--primary);">حجز دواء</h3>
+            <button onclick="closeBookingModal()" style="background:none; border:none; font-size: 24px; cursor:pointer;">&times;</button>
+        </div>
+        
+        <div class="modal-body" style="text-align: center; padding: 20px 0;">
+            <p>حدد الكمية المطلوبة ونوعها:</p>
+            <div class="input-group-modal">
+                <input type="number" id="bookingQuantity" value="1" min="1">
+                <select id="unitType">
+                    <option value="package">علبة</option>
+                    <option value="unit">شريط/وحدة</option>
+                </select>
+            </div>
+            <p style="font-size: 0.8rem; color: #888;">* سيتم تحويل الطلب للصيدلي للمراجعة.</p>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-large" id="confirmBookingBtn" onclick="confirmBookingSubmit()" style="flex:2;">تأكيد الحجز</button>
+            <button class="btn-small" onclick="closeBookingModal()" style="flex:1; background:#e74c3c;">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+    <script src="../scripts/client.js"></script>
+</body>
+</html>
