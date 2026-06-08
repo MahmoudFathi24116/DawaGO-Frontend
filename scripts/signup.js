@@ -179,8 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // 2. معالجة إرسال الفورم
+ 
+// 2. معالجة إرسال فورم
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -188,14 +188,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = {
             full_name: document.getElementById('user-name-in').value,
             email: document.getElementById('email-in').value,
-            phone: document.getElementById('phone-in').value,
+            phone: document.getElementById('phone-in').value.trim(), // تم إضافة trim لإزالة الفراغات الزائدة
             password: document.getElementById('user-pass-in').value,
             role: currentRole,
             latitude: document.getElementById('latitude-in').value,
             longitude: document.getElementById('longitude-in').value
         };
-        console.log(formData);
         
+        // --- نظام التحقق من رقم الموبايل المصري ---
+        // الصيغة: يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015 ويتبعه 8 أرقام (إجمالي 11 رقم)
+        const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
+
+        if (!egyptianPhoneRegex.test(formData.phone)) {
+            alert('عذراً، يجب إدخال رقم موبايل مصري صحيح ومكون من 11 رقم (مثل: 01012345678)');
+            return; // إيقاف تنفيذ الدالة وعدم إرسال الفورم للباك إند
+        }
+        // ----------------------------------------
 
         // إضافة بيانات الصيدلية لو الدور صيدلي
         if (currentRole === 'pharmacy') {
