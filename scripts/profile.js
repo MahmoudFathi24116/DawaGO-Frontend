@@ -182,10 +182,23 @@ async function handleProfileUpdate(e) {
     const token = localStorage.getItem('userToken');
     const role = localStorage.getItem('userRole');
 
+    // جلب رقم الهاتف وعمل trim لإزالة المسافات الفارغة
+    const phoneValue = document.getElementById('edit-phone').value.trim();
+
+    // --- نظام التحقق من رقم الموبايل المصري ---
+    // الصيغة: يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015 ويتبعه 8 أرقام (إجمالي 11 رقم)
+    const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
+
+    if (!egyptianPhoneRegex.test(phoneValue)) {
+        alert('⚠️ عذراً، يجب إدخال رقم موبايل مصري صحيح ومكون من 11 رقم (مثل: 01012345678)');
+        return; // إيقاف تنفيذ الدالة ومنع إرسال البيانات المحدثة للسيرفر
+    }
+    // ----------------------------------------
+
     const payload = {
         role: role,
         full_name: document.getElementById('edit-name').value,
-        phone: document.getElementById('edit-phone').value,
+        phone: phoneValue, // استخدام القيمة المجردة والمحققة هنا
         latitude: document.getElementById('latitude-in').value,
         longitude: document.getElementById('longitude-in').value
     };
