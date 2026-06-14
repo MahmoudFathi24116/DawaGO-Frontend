@@ -111,16 +111,16 @@ async function fetchAndDisplay(query, userLat, userLon) {
             let data = result.data;
             if (userLat && userLon) {
                 data = data.map(item => {
-                    // تحويل الإحداثيات لأرقام عشرية لضمان عمل دالة الحساب بدقة
-                    const phLat = parseFloat(item.latitude);
-                    const phLng = parseFloat(item.longitude);
+                    // قراءة مباشرة من الـ item كأرقام كما ظهر في الـ console بالظبط
+                    const phLat = Number(item.latitude);
+                    const phLng = Number(item.longitude);
                     
                     return {
                         ...item,
-                        distance: calculateDistance(userLat, userLon, phLat, phLng)
+                        distance: calculateDistance(parseFloat(userLat), parseFloat(userLon), phLat, phLng)
                     };
                 });
-                // الترتيب من الأقرب للأبعد
+                // الترتيب التلقائي من الأقرب للأبعد
                 data.sort((a, b) => (a.distance || 999) - (b.distance || 999));
             }
 
@@ -133,7 +133,6 @@ async function fetchAndDisplay(query, userLat, userLon) {
     }
 }
 
-// دالة عرض الكروت - تم تعديل المنطق البرمجي فقط ليتناسب مع الباك اند الذكي
 function displayResults(data) {
     if (!medGrid) return;
 
@@ -147,17 +146,16 @@ function displayResults(data) {
         const card = document.createElement('div');
         card.classList.add('result-card');
         
-        // تصحيح الخطأ الإملائي وعمل الـ Template Literal بشكل صحيح 
-        const phLat = parseFloat(item.latitude);
-        const phLng = parseFloat(item.longitude);
+        const phLat = Number(item.latitude);
+        const phLng = Number(item.longitude);
         
+        // التعديل السحري هنا: صلحنا علامة الـ $ والقوس عشان الرابط والداتا يقرأوا صح من المتصفح
         const mapUrl = item.google_maps_link && item.google_maps_link.trim() !== "" 
                 ? item.google_maps_link 
                 : `https://www.google.com/maps?q=${phLat},${phLng}`;
 
-        // حساب الكميات بناءً على المخزون المتاح (available_stock) القادم من الباك اند الجديد
         let stockInfo = "";
-        const avail = item.available_stock || 0; // استخدام المتاح فعلياً بعد خصم المحجوز
+        const avail = item.available_stock || 0; 
         const unitsPerPkg = item.units_per_package || 1;
 
         if (avail > 0) {
@@ -169,7 +167,6 @@ function displayResults(data) {
             stockInfo = "0";
         }
 
-        // التعديل هنا: نعتمد على available_stock لتحديد حالة "متوفر" أو "نفذت"
         const isAvailable = avail > 0;
 
         card.innerHTML = `
@@ -190,7 +187,7 @@ function displayResults(data) {
                 <h3 class="pharmacy-name">${item.pharmacy_name}</h3>                     
                 <div class="location-details">
                     <i class="fas fa-map-marked-alt"></i>
-                    <span>${item.full_address}</span>
+                    <span>${item.full_address || ''}</span>
                 </div>
                 <p class="med-name">${item.med_name}</p>
                 <p class="price-info">السعر: <b>${item.unit_price} ج.م</b></p>
