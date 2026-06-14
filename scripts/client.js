@@ -109,7 +109,7 @@ async function fetchAndDisplay(query, userLat, userLon) {
 
         if (result.status === 'success') {
             let data = result.data;
-
+            console.log(data);
             if (userLat && userLon) {
                 data = data.map(item => {
                     // تحويل الإحداثيات لأرقام عشرية لضمان عمل دالة الحساب بدقة
@@ -155,7 +155,7 @@ function displayResults(data) {
         const mapUrl = item.google_maps_link && item.google_maps_link.trim() !== "" 
                 ? item.google_maps_link 
                 : `https://www.google.com/maps?q=${phLat},${phLng}`;
-                
+
         // حساب الكميات بناءً على المخزون المتاح (available_stock) القادم من الباك اند الجديد
         let stockInfo = "";
         const avail = item.available_stock || 0; // استخدام المتاح فعلياً بعد خصم المحجوز
