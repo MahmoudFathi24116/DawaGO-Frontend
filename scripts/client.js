@@ -109,7 +109,6 @@ async function fetchAndDisplay(query, userLat, userLon) {
 
         if (result.status === 'success') {
             let data = result.data;
-            console.log(data);
             if (userLat && userLon) {
                 data = data.map(item => {
                     // تحويل الإحداثيات لأرقام عشرية لضمان عمل دالة الحساب بدقة
