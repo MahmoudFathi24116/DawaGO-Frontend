@@ -104,7 +104,6 @@ async function performSearch(query) {
 
 async function fetchAndDisplay(query, userLat, userLon) {
     try {
-        // الرووت المحدث
         const response = await fetch(`https://mahmoud2albehwar.pythonanywhere.com/api/public/search-medications?query=${encodeURIComponent(query)}`);
         const result = await response.json();
 
@@ -112,10 +111,17 @@ async function fetchAndDisplay(query, userLat, userLon) {
             let data = result.data;
 
             if (userLat && userLon) {
-                data = data.map(item => ({
-                    ...item,
-                    distance: calculateDistance(userLat, userLon, item.latitude, item.longitude)
-                }));
+                data = data.map(item => {
+                    // تحويل الإحداثيات لأرقام عشرية لضمان عمل دالة الحساب بدقة
+                    const phLat = parseFloat(item.latitude);
+                    const phLng = parseFloat(item.longitude);
+                    
+                    return {
+                        ...item,
+                        distance: calculateDistance(userLat, userLon, phLat, phLng)
+                    };
+                });
+                // الترتيب من الأقرب للأبعد
                 data.sort((a, b) => (a.distance || 999) - (b.distance || 999));
             }
 
@@ -142,11 +148,14 @@ function displayResults(data) {
         const card = document.createElement('div');
         card.classList.add('result-card');
         
-        // تصحيح بسيط في رابط الخريطة ليعمل بشكل سليم
+        // تصحيح الخطأ الإملائي وعمل الـ Template Literal بشكل صحيح 
+        const phLat = parseFloat(item.latitude);
+        const phLng = parseFloat(item.longitude);
+        
         const mapUrl = item.google_maps_link && item.google_maps_link.trim() !== "" 
                 ? item.google_maps_link 
-                : `https://www.google.com/maps?q=${item.latitude},${item.longitude}`;        
-        
+                : `https://www.google.com/maps?q=${phLat},${phLng}`;
+                
         // حساب الكميات بناءً على المخزون المتاح (available_stock) القادم من الباك اند الجديد
         let stockInfo = "";
         const avail = item.available_stock || 0; // استخدام المتاح فعلياً بعد خصم المحجوز
