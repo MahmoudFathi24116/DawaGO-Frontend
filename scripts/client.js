@@ -28,6 +28,35 @@ if(localStorage.getItem('theme') === 'dark') {
     themeToggle.querySelector('i').className = 'fa-solid fa-lightbulb';
 }
 
+let savedUserLat = null;
+let savedUserLon = null;
+
+// 1. الدالة المعدلة لقراءة الإحداثيات من كائن الـ details القادم من السيرفر
+async function loadUserSavedLocation() {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('userToken');
+    if (!userId) return;
+
+    try {
+        const response = await fetch(`https://mahmoud2albehwar.pythonanywhere.com/api/user/profile/${userId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        
+        // التعديل الجوهري: قراءة البيانات من داخل كائن الـ details بدقة كما يرسلها الباك إند
+        if (result.status === 'success' && result.data && result.data.details) {
+            savedUserLat = result.data.details.latitude;
+            savedUserLon = result.data.details.longitude;
+            console.log("📍 تم تحميل موقع العميل بنجاح من السيرفر (تفاصيل العميل):", savedUserLat, savedUserLon);
+        }
+    } catch (error) {
+        console.error("خطأ في جلب موقع العميل من السيرفر:", error);
+    }
+}
+
+// تشغيل الدالة فور تحميل الصفحة لتجهيز الإحداثيات
+document.addEventListener('DOMContentLoaded', loadUserSavedLocation);
+
 // دالة حساب المسافة (Haversine Formula)
 function calculateDistance(lat1, lon1, lat2, lon2) {
     if (!lat1 || !lon1 || !lat2 || !lon2) return null;
@@ -38,6 +67,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    console.log(parseFloat((R * c).toFixed(1)));
     return parseFloat((R * c).toFixed(1)); 
 }
 
@@ -88,18 +118,19 @@ const medGrid = document.getElementById('results-grid');
 async function performSearch(query) {
     if (query.length < 2) {
         if (medGrid) medGrid.innerHTML = '';
-        if (resultStatus) resultStatus.innerText = 'اكتب حرفين على الأقل...';
+        if (resultStatus) resultStatus.innerText = 'اكتب حرفين على الألق...';
         return;
     }
-    if (resultStatus) resultStatus.innerText = 'جاري البحث وتحديد الأقرب...';
+    if (resultStatus) resultStatus.innerText = 'جاري البحث وحساب المسافة بناءً على موقعك المسجل...';
 
-    navigator.geolocation.getCurrentPosition(async (position) => {
-        const userLat = position.coords.latitude;
-        const userLon = position.coords.longitude;
-        await fetchAndDisplay(query, userLat, userLon);
-    }, async () => {
+    // نمرر الإحداثيات المسترجعة من السيرفر مباشرة للدالة
+    if (savedUserLat && savedUserLon) {
+        await fetchAndDisplay(query, savedUserLat, savedUserLon);
+    } else {
+        // لو العميل مش مسجل موقع في حسابه لسه، نبحث عادي بدون حساب مسافة (أو تظهر غير محدد)
+        console.warn("⚠️ العميل لم يقم بتحديث موقعه في ملفه الشخصي بعد.");
         await fetchAndDisplay(query, null, null);
-    });
+    }
 }
 
 async function fetchAndDisplay(query, userLat, userLon) {
