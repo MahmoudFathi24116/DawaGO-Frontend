@@ -165,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: document.getElementById('email-in').value,
                 phone: document.getElementById('phone-in').value.trim(), 
                 password: document.getElementById('user-pass-in').value,
+                password_confirm: document.getElementById('user-pass-confirm-in').value,
                 role: currentRole,
                 latitude: document.getElementById('latitude-in').value,
                 longitude: document.getElementById('longitude-in').value
@@ -177,7 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('phone-in').focus();
                 return; 
             }
-
+            if (formData.password !== formData.password_confirm) {
+                alert('كلمتا المرور غير متطابقتين');
+                document.getElementById('user-pass-confirm-in').focus();
+                return;
+            }
             // التحقق البرمجي الذكي الخاص بحقول الصيدلية (فقط إذا كان الحساب صيدلي)
             if (currentRole === 'pharmacy') {
                 const pharmacyName = document.getElementById('pharmacyName');
