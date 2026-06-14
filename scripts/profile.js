@@ -173,9 +173,15 @@ function getCurrentLocation() {
 function updateCoordsInputs(lat, lng) {
     document.getElementById('latitude-in').value = lat;
     document.getElementById('longitude-in').value = lng;
+    // حركة ذكية: تحديث رابط جوجل ماب التلقائي في حقل الرابط لو الحساب صيدلية
+    const mapsLinkInput = document.getElementById('edit-location');
+    if (mapsLinkInput && localStorage.getItem('userRole') === 'pharmacy') {
+        mapsLinkInput.value = `https://www.google.com/maps?q=${lat},${lng}`;
+    }
 }
 
 // دالة إرسال البيانات المحدثة للباك اند
+// دالة إرسال البيانات المحدثة للباك اند (المعدلة)
 async function handleProfileUpdate(e) {
     e.preventDefault();
     const userId = localStorage.getItem('userId');
@@ -186,21 +192,24 @@ async function handleProfileUpdate(e) {
     const phoneValue = document.getElementById('edit-phone').value.trim();
 
     // --- نظام التحقق من رقم الموبايل المصري ---
-    // الصيغة: يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015 ويتبعه 8 أرقام (إجمالي 11 رقم)
     const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
 
     if (!egyptianPhoneRegex.test(phoneValue)) {
         alert('⚠️ عذراً، يجب إدخال رقم موبايل مصري صحيح ومكون من 11 رقم (مثل: 01012345678)');
-        return; // إيقاف تنفيذ الدالة ومنع إرسال البيانات المحدثة للسيرفر
+        return; 
     }
     // ----------------------------------------
+
+    // جلب القيم المحدثة من الحقول المخفية للخريطة فوراً وقت الضغط على الزر
+    const latValue = document.getElementById('latitude-in').value;
+    const lngValue = document.getElementById('longitude-in').value;
 
     const payload = {
         role: role,
         full_name: document.getElementById('edit-name').value,
-        phone: phoneValue, // استخدام القيمة المجردة والمحققة هنا
-        latitude: document.getElementById('latitude-in').value,
-        longitude: document.getElementById('longitude-in').value
+        phone: phoneValue, 
+        latitude: latValue ? parseFloat(latValue) : null, // تحويلها لرقم لضمان قبولها في السيرفر
+        longitude: lngValue ? parseFloat(lngValue) : null
     };
 
     if (role === 'pharmacy') {
