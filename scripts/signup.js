@@ -181,69 +181,100 @@ document.addEventListener('DOMContentLoaded', () => {
     });
  
 // 2. معالجة إرسال فورم
-    registerForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+// 2. معالجة إرسال فورم
+registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        // تجميع البيانات الأساسية
-        const formData = {
-            full_name: document.getElementById('user-name-in').value,
-            email: document.getElementById('email-in').value,
-            phone: document.getElementById('phone-in').value.trim(), // تم إضافة trim لإزالة الفراغات الزائدة
-            password: document.getElementById('user-pass-in').value,
-            role: currentRole,
-            latitude: document.getElementById('latitude-in').value,
-            longitude: document.getElementById('longitude-in').value
-        };
-        
-        // --- نظام التحقق من رقم الموبايل المصري ---
-        // الصيغة: يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015 ويتبعه 8 أرقام (إجمالي 11 رقم)
-        const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
+    // تجميع البيانات الأساسية
+    const formData = {
+        full_name: document.getElementById('user-name-in').value,
+        email: document.getElementById('email-in').value,
+        phone: document.getElementById('phone-in').value.trim(), 
+        password: document.getElementById('user-pass-in').value,
+        role: currentRole,
+        latitude: document.getElementById('latitude-in').value,
+        longitude: document.getElementById('longitude-in').value
+    };
+    
+    // --- نظام التحقق من رقم الموبايل المصري ---
+    const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
+    if (!egyptianPhoneRegex.test(formData.phone)) {
+        alert('عذراً، يجب إدخال رقم موبايل مصري صحيح ومكون من 11 رقم (مثل: 01012345678)');
+        document.getElementById('phone-in').focus();
+        return; 
+    }
+    // ----------------------------------------
 
-        if (!egyptianPhoneRegex.test(formData.phone)) {
-            alert('عذراً، يجب إدخال رقم موبايل مصري صحيح ومكون من 11 رقم (مثل: 01012345678)');
-            return; // إيقاف تنفيذ الدالة وعدم إرسال الفورم للباك إند
+    // --- التحقق الذكي من حقول الصيدلية (فقط لو الدور صيدلي) ---
+    if (currentRole === 'pharmacy') {
+        const pharmacyName = document.getElementById('pharmacyName');
+        const governorate = document.getElementById('governorate');
+        const cityCenter = document.getElementById('city-center');
+        const districtVillage = document.getElementById('district-village');
+        const gmapUrl = document.getElementById('gmap-url');
+
+        // 1. التحقق من اسم الصيدلية
+        if (!pharmacyName.value.trim()) {
+            alert('برجاء إدخال اسم الصيدلية');
+            pharmacyName.focus();
+            return;
         }
-        // ----------------------------------------
-
-        // إضافة بيانات الصيدلية لو الدور صيدلي
-        if (currentRole === 'pharmacy') {
-            formData.pharmacy_name = document.getElementById('pharmacyName').value;
-            formData.governorate = document.getElementById('governorate').value;
-            formData.city_center = document.getElementById('city-center').value;
-            formData.district_village = document.getElementById('district-village').value;
-            formData.gmap_url = document.getElementById('gmap-url').value;
+        // 2. التحقق من اختيار المحافظة
+        if (!governorate.value) {
+            alert('برجاء اختيار المحافظة');
+            governorate.focus();
+            return;
+        }
+        // 3. التحقق من المركز / المدينة
+        if (!cityCenter.value.trim()) {
+            alert('برجاء إدخال المركز أو المدينة');
+            cityCenter.focus();
+            return;
+        }
+        // 4. التحقق من الحي / الشارع
+        if (!districtVillage.value.trim()) {
+            alert('برجاء إدخال الحي أو القرية أو اسم الشارع');
+            districtVillage.focus();
+            return;
         }
 
-        try {
-            // إظهار حالة تحميل (Loading)
-            const signupBtn = document.getElementById('signup-btn');
-            signupBtn.disabled = true;
-            signupBtn.innerText = 'جاري إنشاء الحساب...';
+        // حفظ بيانات الصيدلية في الكائن بعد التأكد من صحتها
+        formData.pharmacy_name = pharmacyName.value.trim();
+        formData.governorate = governorate.value;
+        formData.city_center = cityCenter.value.trim();
+        formData.district_village = districtVillage.value.trim();
+        formData.gmap_url = gmapUrl.value.trim(); // اختياري كما هو مكتوب بالـ HTML
+    }
 
-            // إرسال الطلب للباك إند (Flask)
-            const response = await fetch('https://mahmoud2albehwar.pythonanywhere.com/api/auth/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+    try {
+        // إظهار حالة تحميل (Loading)
+        const signupBtn = document.getElementById('signup-btn');
+        signupBtn.disabled = true;
+        signupBtn.innerText = 'جاري إنشاء الحساب...';
 
-            const result = await response.json();
+        // إرسال الطلب للباك إند (Flask)
+        const response = await fetch('https://mahmoud2albehwar.pythonanywhere.com/api/auth/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
 
-            if (response.ok) {
-                alert('تم التسجيل بنجاح! برجاء مراجعة بريدك الإلكتروني لتفعيل الحساب.');
-            } else {
-                alert('خطأ: ' + result.message);
-            }
+        const result = await response.json();
 
-        } catch (error) {
-            console.error('Error:', error);
-            alert('حدث خطأ في الاتصال بالسيرفر');
-        } finally {
-            const signupBtn = document.getElementById('signup-btn');
-            signupBtn.disabled = false;
-            signupBtn.innerText = 'إنشاء الحساب';
+        if (response.ok) {
+            alert('تم التسجيل بنجاح! برجاء مراجعة بريدك الإلكتروني لتفعيل الحساب.');
+        } else {
+            alert('خطأ: ' + result.message);
         }
-    });
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('حدث خطأ في الاتصال بالسيرفر');
+    } finally {
+        const signupBtn = document.getElementById('signup-btn');
+        signupBtn.disabled = false;
+        signupBtn.innerText = 'إنشاء الحساب';
+    }
 });
