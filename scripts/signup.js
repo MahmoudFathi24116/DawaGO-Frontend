@@ -179,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-});
 
 // 2. معالجة إرسال فورم
 // 2. معالجة إرسال فورم
@@ -278,4 +277,5 @@ registerForm.addEventListener('submit', async (e) => {
         signupBtn.disabled = false;
         signupBtn.innerText = 'إنشاء الحساب';
     }
+});
 });
